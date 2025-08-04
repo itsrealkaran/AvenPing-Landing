@@ -3,24 +3,63 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --primary: #00B2FF;
+  --destructive: #FF0000;
+  --unread-timestamp: #0095D1;
+  --active-filter-bg: #E3F7FF;
+  --active-filter: #0077A8;
+  --outgoing: #D3F1FF;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-unread-timestamp: var(--unread-timestamp);
+  --color-active-filter-bg: var(--active-filter-bg);
+  --color-active-filter: var(--active-filter);
+  --color-outgoing: var(--outgoing);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans, Arial, Helvetica, sans-serif);
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #eee;
+}
+::-webkit-scrollbar-thumb {
+  background: #ccc;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: #888;
+}
+
+::-webkit-scrollbar-thumb:window-inactive {
+  background: #ccc;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-100% - 1rem));
+  }
+}
+
+.animate-scroll {
+  animation: scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite;
 }

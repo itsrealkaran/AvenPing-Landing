@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   Check,
   X,
@@ -25,6 +25,7 @@ import Navbar from "@/components/navbar"
 import { HoverEffect } from "@/components/ui/card-hover-effect"
 import { Footer } from "@/components/footer"
 import Tag from "@/components/ui/tag"
+import { convertPrice, initializeCurrency, type PriceData } from "@/lib/currency-utils"
 
 const plans = [
   {
@@ -155,6 +156,7 @@ const addOns = [
     link: "More Detail",
     icon: <Settings size={24} className="text-cyan-600" />,
     price: "$5/month",
+    usdPrice: 5,
   },
   {
     title: "Extra Contacts (1,000)",
@@ -162,6 +164,7 @@ const addOns = [
     link: "More Detail",
     icon: <Users size={24} className="text-cyan-600" />,
     price: "$7/month",
+    usdPrice: 7,
   },
   {
     title: "Mobile App Access",
@@ -169,6 +172,7 @@ const addOns = [
     link: "More Detail",
     icon: <Smartphone size={24} className="text-cyan-600" />,
     price: "$19/month",
+    usdPrice: 19,
   },
   {
     title: "Auto-Sync Feature",
@@ -177,6 +181,7 @@ const addOns = [
     link: "More Detail",
     icon: <Database size={24} className="text-cyan-600" />,
     price: "Included in Premium+",
+    usdPrice: 0,
   },
   {
     title: "Priority Support",
@@ -184,6 +189,7 @@ const addOns = [
     link: "More Detail",
     icon: <Headphones size={24} className="text-cyan-600" />,
     price: "Enterprise Only",
+    usdPrice: 0,
   },
   {
     title: "Advanced Analytics",
@@ -191,6 +197,7 @@ const addOns = [
     link: "More Detail",
     icon: <BarChart3 size={24} className="text-cyan-600" />,
     price: "Premium+",
+    usdPrice: 0,
   },
 ]
 
@@ -198,6 +205,11 @@ export default function PricingPage() {
   const [isYearly, setIsYearly] = useState(false)
   const [expandedCards, setExpandedCards] = useState<{ [key: number]: boolean }>({})
   const [email, setEmail] = useState("")
+  const [convertedPrices, setConvertedPrices] = useState<{ [key: string]: PriceData }>({})
+  const [convertedYearlyPrices, setConvertedYearlyPrices] = useState<{ [key: string]: PriceData }>({})
+  const [convertedAddOnPrices, setConvertedAddOnPrices] = useState<{ [key: string]: PriceData }>({})
+  const [isLoading, setIsLoading] = useState(true)
+  const [userCurrency, setUserCurrency] = useState<string>('USD')
 
   const toggleExpanded = (cardIndex: number) => {
     setExpandedCards((prev) => ({
@@ -205,6 +217,86 @@ export default function PricingPage() {
       [cardIndex]: !prev[cardIndex],
     }))
   }
+
+  // Initialize currency conversion
+  useEffect(() => {
+    async function setupCurrency() {
+      try {
+        setIsLoading(true);
+        const currencyData = await initializeCurrency();
+        setUserCurrency(currencyData.currency);
+
+        // Convert all monthly prices
+        const monthlyPriceMap: { [key: string]: PriceData } = {};
+        const yearlyPriceMap: { [key: string]: PriceData } = {};
+        const addOnPriceMap: { [key: string]: PriceData } = {};
+        
+        for (const plan of plans) {
+          const monthlyUsdPrice = parseInt(plan.price.replace('$', ''));
+          const yearlyUsdPrice = parseInt(plan.yearlyPrice.replace('$', ''));
+          
+          const convertedMonthly = await convertPrice(monthlyUsdPrice, currencyData.currency);
+          const convertedYearly = await convertPrice(yearlyUsdPrice, currencyData.currency);
+          
+          monthlyPriceMap[plan.name] = convertedMonthly;
+          yearlyPriceMap[plan.name] = convertedYearly;
+        }
+
+        // Convert add-on prices
+        for (const addOn of addOns) {
+          if (addOn.usdPrice > 0) {
+            const converted = await convertPrice(addOn.usdPrice, currencyData.currency);
+            addOnPriceMap[addOn.title] = converted;
+          } else {
+            addOnPriceMap[addOn.title] = {
+              amount: addOn.price,
+              currency: 'USD',
+              symbol: '$'
+            };
+          }
+        }
+        
+        setConvertedPrices(monthlyPriceMap);
+        setConvertedYearlyPrices(yearlyPriceMap);
+        setConvertedAddOnPrices(addOnPriceMap);
+      } catch (error) {
+        console.error('Error setting up currency:', error);
+        // Fallback to USD
+        const monthlyPriceMap: { [key: string]: PriceData } = {};
+        const yearlyPriceMap: { [key: string]: PriceData } = {};
+        const addOnPriceMap: { [key: string]: PriceData } = {};
+        
+        for (const plan of plans) {
+          monthlyPriceMap[plan.name] = {
+            amount: plan.price,
+            currency: 'USD',
+            symbol: '$'
+          };
+          yearlyPriceMap[plan.name] = {
+            amount: plan.yearlyPrice,
+            currency: 'USD',
+            symbol: '$'
+          };
+        }
+
+        for (const addOn of addOns) {
+          addOnPriceMap[addOn.title] = {
+            amount: addOn.price,
+            currency: 'USD',
+            symbol: '$'
+          };
+        }
+        
+        setConvertedPrices(monthlyPriceMap);
+        setConvertedYearlyPrices(yearlyPriceMap);
+        setConvertedAddOnPrices(addOnPriceMap);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    setupCurrency();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-cyan-100 via-purple-100 to-white">
@@ -283,10 +375,26 @@ export default function PricingPage() {
                     <h3 className="text-2xl font-semibold text-gray-900 mb-2">{plan.name}</h3>
                     <p className="text-gray-600 mb-4">{plan.description}</p>
                     <div className="mb-4">
-                      <span className="text-5xl font-bold text-gray-900">
-                        {isYearly ? plan.yearlyPrice : plan.price}
-                      </span>
-                      <span className="text-gray-600 ml-2">{plan.period}</span>
+                      {isLoading ? (
+                        <div className="flex items-center justify-center">
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"></div>
+                        </div>
+                      ) : (
+                        <>
+                          <span className="text-5xl font-bold text-gray-900">
+                            {isYearly 
+                              ? convertedYearlyPrices[plan.name]?.amount || plan.yearlyPrice
+                              : convertedPrices[plan.name]?.amount || plan.price
+                            }
+                          </span>
+                          <span className="text-gray-600 ml-2">{plan.period}</span>
+                          {userCurrency !== 'USD' && (
+                            <div className="text-xs text-cyan-600 mt-1">
+                              Prices in {userCurrency}
+                            </div>
+                          )}
+                        </>
+                      )}
                     </div>
                     {isYearly && <p className="text-sm text-cyan-600 font-medium">{plan.yearlyNote}</p>}
                   </div>
@@ -365,7 +473,10 @@ export default function PricingPage() {
                 6 Add-ons Available
               </span>
             </div>
-            <HoverEffect items={addOns} />
+            <HoverEffect items={addOns.map(addOn => ({
+              ...addOn,
+              price: convertedAddOnPrices[addOn.title]?.amount || addOn.price
+            }))} />
           </div>
          
 

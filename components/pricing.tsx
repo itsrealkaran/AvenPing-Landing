@@ -4,7 +4,8 @@ import Tag from "@/components/ui/tag";
 import Button from "@/components/ui/button2";
 import { Check, ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { convertPrice, initializeCurrency, type PriceData } from "@/lib/currency-utils";
 
 const plans = [
   {
@@ -83,6 +84,9 @@ export default function Pricing() {
   const [expandedCards, setExpandedCards] = useState<{
     [key: number]: boolean;
   }>({});
+  const [convertedPrices, setConvertedPrices] = useState<{ [key: string]: PriceData }>({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [userCurrency, setUserCurrency] = useState<string>('USD');
 
   const toggleExpanded = (index: number) => {
     setExpandedCards((prev) => ({
@@ -90,6 +94,42 @@ export default function Pricing() {
       [index]: !prev[index],
     }));
   };
+
+  // Initialize currency conversion
+  useEffect(() => {
+    async function setupCurrency() {
+      try {
+        setIsLoading(true);
+        const currencyData = await initializeCurrency();
+        setUserCurrency(currencyData.currency);
+
+        // Convert all prices
+        const priceMap: { [key: string]: PriceData } = {};
+        for (const plan of plans) {
+          const usdPrice = parseInt(plan.price.replace('$', ''));
+          const converted = await convertPrice(usdPrice, currencyData.currency);
+          priceMap[plan.name] = converted;
+        }
+        setConvertedPrices(priceMap);
+      } catch (error) {
+        console.error('Error setting up currency:', error);
+        // Fallback to USD
+        const priceMap: { [key: string]: PriceData } = {};
+        for (const plan of plans) {
+          priceMap[plan.name] = {
+            amount: plan.price,
+            currency: 'USD',
+            symbol: '$'
+          };
+        }
+        setConvertedPrices(priceMap);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    setupCurrency();
+  }, []);
 
   return (
     <section className="py-24 bg-gray-100 ">
@@ -136,10 +176,23 @@ export default function Pricing() {
                   </h3>
                   <p className="text-gray-600 mb-4">{plan.description}</p>
                   <div className="mb-4">
-                    <span className="text-5xl font-bold text-gray-900">
-                      {plan.price}
-                    </span>
-                    <span className="text-gray-600 ml-2">{plan.period}</span>
+                    {isLoading ? (
+                      <div className="flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"></div>
+                      </div>
+                    ) : (
+                      <>
+                        <span className="text-5xl font-bold text-gray-900">
+                          {convertedPrices[plan.name]?.amount || plan.price}
+                        </span>
+                        <span className="text-gray-600 ml-2">{plan.period}</span>
+                        {userCurrency !== 'USD' && (
+                          <div className="text-xs text-cyan-600 mt-1">
+                            Prices in {userCurrency}
+                          </div>
+                        )}
+                      </>
+                    )}
                   </div>
                 </div>
 

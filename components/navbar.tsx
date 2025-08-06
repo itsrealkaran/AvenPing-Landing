@@ -119,7 +119,7 @@ export default function Navbar() {
                     </motion.div>
                   )}
                 </button>
-                <Link href="/login">
+                <Link href="https://app.avenping.com/login">
                   <Button
                     variant="secondary"
                     className="hidden lg:inline-flex items-center"
@@ -127,7 +127,7 @@ export default function Navbar() {
                     Login
                   </Button>
                 </Link>
-                <Link href="/signup">
+                <Link href="https://app.avenping.com/sign-up">
                   <Button
                     variant="primary"
                     className="hidden lg:inline-flex items-center"

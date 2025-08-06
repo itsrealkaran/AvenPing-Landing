@@ -4,8 +4,8 @@ import { AnimationPlaybackControls, motion, useAnimate } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import Link from "next/link";
-import Button from "@/components/ui/button2";
-import Image from "next/image";
+import Button from "./ui/button2";
+
 
 export default function CallToAction() {
   const animation = useRef<AnimationPlaybackControls | null>(null);
@@ -42,12 +42,7 @@ export default function CallToAction() {
         >
           {Array.from({ length: 10 }).map((_, index) => (
             <div key={index} className="flex items-center gap-16">
-              <Image
-                src="/AvenLogo.svg"
-                alt="Star"
-                width={100}
-                height={100}
-              />
+              <span className="text-cyan-600 text-7xl">&#10038;</span>
               <span className={twMerge(slowDownAnimation && "text-cyan-600 text-7xl")}
               style={{ fontSize: "inherit" }}>
                 Start for free

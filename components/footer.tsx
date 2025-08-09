@@ -1,12 +1,8 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { Facebook, Instagram, Twitter, Linkedin, User2, Youtube } from 'lucide-react'
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import Logo from "@/components/logo"
-import Image from "next/image"
+import { Facebook, Instagram, Linkedin, Youtube } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
 
 const footerLinks = {
   Platform: [
@@ -17,21 +13,21 @@ const footerLinks = {
   Company: [
     { name: "About", href: "#" },
     { name: "Careers", href: "/careers" },
-    { name: "Contact", href: "#" },
+    { name: "Contact", href: "/contact" },
   ],
   Legal: [
     { name: "Privacy Policy", href: "/privacy-policy" },
     { name: "Terms of Service", href: "/terms-of-service" },
   ],
-}
+};
 
 const socialLinks = [
-  { icon: Facebook, href: "http://facebook.com/avencrm" },
+  { icon: Facebook, href: "https://facebook.com/avencrm" },
   { icon: Instagram, href: "https://instagram.com/avencrm_" },
   // { icon: Twitter, href: "#" },
   { icon: Linkedin, href: "https://www.linkedin.com/company/aven-crm/" },
   { icon: Youtube, href: "https://youtube.com/@avencrm" },
-]
+];
 
 export function Footer() {
   return (
@@ -68,56 +64,59 @@ export function Footer() {
 
         {/* Links Section */}
         <div className="grid md:grid-cols-2 mb-16 md:mb-28 pt-8  border-[#dddddd]">
-            <div className="hidden md:flex flex-col justify-between">
-              <Link href="/" className="flex items-center gap-[2px] mb-6">
-                <div className='text-[1.6rem] md:text-[2rem]'>
-                  <Image src="/AvenLogo.svg" alt="AvenPing" width={30} height={30} />
-                </div>
-                <div
-                className='text-[1rem] md:text-[1.3rem] flex gap-[2px] items-end font-bold'
-                  >
-                  <h1 className="text-[#00b7db]">AvenPing</h1>
-                </div>
-              </Link>
-              <p className="text-[#5c5f66] max-w-sm">
-                A simple CRM that is easy to use and easy to manage.
-              </p>
-            </div>
+          <div className="hidden md:flex flex-col justify-between">
+            <Link href="/" className="flex items-center gap-[2px] mb-6">
+              <div className="text-[1.6rem] md:text-[2rem]">
+                <Image
+                  src="/AvenPing-Logo.svg"
+                  alt="AvenPing"
+                  width={30}
+                  height={30}
+                />
+              </div>
+              <div className="text-[1rem] md:text-[1.3rem] flex gap-[2px] items-end font-bold">
+                <h1 className="text-[#00b7db]">AvenPing</h1>
+              </div>
+            </Link>
+            <p className="text-[#5c5f66] max-w-sm">
+              A whatsapp marketing tool that is easy to use and easy to manage.
+            </p>
+          </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
-          {Object.entries(footerLinks).map(([category, links]) => (
-            <div key={category}>
-              <h4 className="text-[#444444] mb-4">{category}</h4>
-              <ul className="space-y-3">
-                {links.map((link) => (
-                  <li key={link.name}>
-                    <Link 
-                      href={link.href}
-                      className="text-[#111111] hover:text-[#000000] transition-colors"
-                    >
-                      {link.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+            {Object.entries(footerLinks).map(([category, links]) => (
+              <div key={category}>
+                <h4 className="text-[#444444] mb-4">{category}</h4>
+                <ul className="space-y-3">
+                  {links.map((link) => (
+                    <li key={link.name}>
+                      <Link
+                        href={link.href}
+                        className="text-[#111111] hover:text-[#000000] transition-colors"
+                      >
+                        {link.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-[#d6d6d6]">
+        <div className="flex flex-col md:flex-row items-center justify-between py-4 border-t border-[#d6d6d6]">
           <div className="flex items-center gap-6 mb-4 md:mb-0">
             {socialLinks.map((link, index) => {
-              const Icon = link.icon
+              const Icon = link.icon;
               return (
-                <Link 
-                  key={index} 
+                <Link
+                  key={index}
                   href={link.href}
                   className="text-[#5c5f66] hover:text-[#000000] transition-colors"
                 >
                   <Icon className="h-5 w-5" />
                 </Link>
-              )
+              );
             })}
           </div>
 
@@ -125,19 +124,25 @@ export function Footer() {
             <button className="hover:text-[#000000] transition-colors">
               English
             </button>
-            <Link href="/privacy-policy" className="hover:text-[#000000] transition-colors">
+            <Link
+              href="/privacy-policy"
+              className="hover:text-[#000000] transition-colors"
+            >
               Privacy
             </Link>
-            <Link href="/terms-of-service" className="hover:text-[#000000] transition-colors">
+            <Link
+              href="/terms-of-service"
+              className="hover:text-[#000000] transition-colors"
+            >
               Legal
             </Link>
           </div>
 
           <div className="text-sm text-[#5c5f66] mt-4 md:mt-0">
-            © 2024 Aven Technologies Inc. All Rights Reserved.
+            © 2025 Aven Technologies Inc. All Rights Reserved.
           </div>
         </div>
       </div>
     </footer>
-  )
+  );
 }

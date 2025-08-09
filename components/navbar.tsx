@@ -10,8 +10,7 @@ import Image from "next/image";
 const navLinks = [
   { label: "Pricing", href: "/pricing" },
   { label: "Features", href: "/features" },
-  { label: "Careers", href: "/careers" },
-  { label: "Contact", href: "/contact" },
+  { label: "Insights", href: "https://insights.avenping.com" },
 ];
 
 export default function Navbar() {
@@ -67,9 +66,8 @@ export default function Navbar() {
               <div>
                 <Link href="/" className="flex items-center px-4">
                   <Image
-                    src="/AvenLogo.svg"
+                    src="/AvenPing-Logo.svg"
                     alt="AvenPing Logo"
-                    
                     width={30}
                     height={30}
                   />
@@ -127,7 +125,7 @@ export default function Navbar() {
                     Login
                   </Button>
                 </Link>
-                <Link href="https://app.avenping.com/sign-up">
+                <Link href="https://app.avenping.com/signup">
                   <Button
                     variant="primary"
                     className="hidden lg:inline-flex items-center"
@@ -156,12 +154,12 @@ export default function Navbar() {
                         {link.label}
                       </Link>
                     ))}
-                    <Link href="/login" className="w-3/4">
+                    <Link href="https://app.avenping.com/login" className="w-3/4">
                       <Button className="w-full" variant="secondary">
                         Log In
                       </Button>
                     </Link>
-                    <Link href="/signup" className="w-3/4">
+                    <Link href="https://app.avenping.com/signup" className="w-3/4">
                       <Button className="w-full" variant="primary">
                         Get Started
                       </Button>

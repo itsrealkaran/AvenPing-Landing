@@ -3,7 +3,6 @@ import CallToAction from "@/components/call-to-action";
 import Faqs from "@/components/faqs";
 import Features from "@/components/features";
 import { Footer } from "@/components/footer";
-
 import Hero from "@/components/hero";
 import Integrations from "@/components/integrations";
 import Introduction from "@/components/introduction";

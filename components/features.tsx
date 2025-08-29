@@ -18,6 +18,7 @@ import {
   Globe,
   Lock,
 } from "lucide-react";
+import Whatsapp from "@/public/whatsapp.svg";
 import { motion, easeOut } from "framer-motion";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 
@@ -226,13 +227,20 @@ export default function Features() {
               <FeatureCard
                 title="Bulk Messaging"
                 description="Send personalized messages to thousands of contacts instantly with advanced targeting and scheduling."
-                icon={<MessageCircle size={24} className="text-cyan-600" />}
+                icon={
+                  <img
+                    src="/whatsapp.svg"
+                    alt="Whatsapp"
+                    className="size-[24px] mx-auto"
+                  />
+                }
               >
                 <div className="text-center space-y-4">
                   <div className="relative">
-                    <MessageCircle
-                      size={48}
-                      className="text-cyan-500 mx-auto"
+                    <img
+                      src="/whatsapp.svg"
+                      alt="Whatsapp"
+                      className="w-10 h-10 mx-auto"
                     />
                     <div className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
                       <span className="text-white text-xs font-bold">99+</span>

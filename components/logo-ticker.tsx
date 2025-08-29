@@ -1,5 +1,11 @@
 "use client";
 
+import expLogo from "@/public/images/exp.svg";
+import dearMomLogo from "@/public/images/dear_mom.svg";
+import zhiLogo from "@/public/images/zhi.svg";
+import expGlobalLogo from "@/public/images/exp_global.svg";
+import maestroLogo from "@/public/images/maestro.svg";
+import dreamLaunchLogo from "@/public/images/dream_launch.svg";
 import quantumLogo from "@/public/images/quantum.svg";
 import acmeLogo from "@/public/images/acme-corp.svg";
 import echoValleyLogo from "@/public/images/echo-valley.svg";
@@ -13,14 +19,18 @@ import { motion } from "framer-motion";
 import React from "react";
 
 const logos = [
-    { name: "Quantum", image: quantumLogo },
-    { name: "Acme Corp", image: acmeLogo },
-    { name: "Echo Valley", image: echoValleyLogo },
-    { name: "Pulse", image: pulseLogo },
-    { name: "Outside", image: outsideLogo },
-    { name: "Apex", image: apexLogo },
-    { name: "Celestial", image: celestialLogo },
-    { name: "Twice", image: twiceLogo },
+    { name: "DreamLaunch", image: dreamLaunchLogo },
+    { name: "Ask Maestro", image: maestroLogo },
+    { name: "Exp", image: expLogo },
+    { name: "Dear Mom", image: dearMomLogo },
+    { name: "Zhi", image: zhiLogo },
+    { name: "Exp Global", image: expGlobalLogo },
+    // { name: "Acme Corp", image: acmeLogo },
+    // { name: "Echo Valley", image: echoValleyLogo },
+    // { name: "Pulse", image: pulseLogo },
+    // { name: "Outside", image: outsideLogo },
+    // { name: "Apex", image: apexLogo },
+    // { name: "Celestial", image: celestialLogo },
 ];
 
 export default function LogoTicker() {

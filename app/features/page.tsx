@@ -29,16 +29,6 @@ import { Footer } from "@/components/footer";
 import Features2 from "@/components/features2";
 import Tag from "@/components/ui/tag";
 
-const features = [
-  "Auto Replies",
-  "Bulk Messaging",
-  "Contact Management",
-  "Analytics Dashboard",
-  "Message Templates",
-  "Team Collaboration",
-  "API Integration",
-];
-
 interface FeatureCardProps {
   title: string;
   description: string;

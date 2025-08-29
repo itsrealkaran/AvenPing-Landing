@@ -5,12 +5,17 @@ import Button from "@/components/ui/button2";
 import { Check, ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { convertPrice, initializeCurrency, type PriceData } from "@/lib/currency-utils";
+import {
+  getUserRegionCached,
+  getRegionConfig,
+  type Region,
+} from "@/lib/region";
 
 const plans = [
   {
     name: "Basic",
-    price: "$35",
+    monthly: { India: "₹1199", Asia: "$14", Global: "$35" },
+    yearly: { India: "₹999", Asia: "$12", Global: "$29" },
     period: "per month",
     description: "Perfect for small businesses getting started",
     features: [
@@ -29,7 +34,8 @@ const plans = [
   },
   {
     name: "Premium",
-    price: "$71",
+    monthly: { India: "₹3,599", Asia: "$44", Global: "$71" },
+    yearly: { India: "₹2,999", Asia: "$36", Global: "$59" },
     period: "per month",
     description: "Ideal for growing businesses and small teams",
     features: [
@@ -44,7 +50,6 @@ const plans = [
       "Phone Numbers - Unlimited",
       "Campaigns - Unlimited",
       "WhatsApp Green Tick Application",
-      "Catalogue",
       "Flow Builder - 3 Flows",
       "Analytics",
     ],
@@ -52,7 +57,8 @@ const plans = [
   },
   {
     name: "Enterprise",
-    price: "$95",
+    monthly: { India: "₹5,999", Asia: "$72", Global: "$95" },
+    yearly: { India: "₹4,999", Asia: "$60", Global: "$79" },
     period: "per month",
     description: "For large organizations with complex needs",
     features: [
@@ -67,7 +73,6 @@ const plans = [
       "Phone Numbers - Unlimited",
       "Campaigns - Unlimited",
       "WhatsApp Green Tick Application",
-      "Catalogue",
       "Flow Builder - 5 Flows",
       "Analytics",
       "AI Chat Bot",
@@ -84,9 +89,9 @@ export default function Pricing() {
   const [expandedCards, setExpandedCards] = useState<{
     [key: number]: boolean;
   }>({});
-  const [convertedPrices, setConvertedPrices] = useState<{ [key: string]: PriceData }>({});
   const [isLoading, setIsLoading] = useState(true);
-  const [userCurrency, setUserCurrency] = useState<string>('USD');
+  const [userRegion, setUserRegion] = useState<Region>("global");
+  const [isYearly, setIsYearly] = useState(false);
 
   const toggleExpanded = (index: number) => {
     setExpandedCards((prev) => ({
@@ -95,41 +100,37 @@ export default function Pricing() {
     }));
   };
 
-  // Initialize currency conversion
+  // Get user region on component mount
   useEffect(() => {
-    async function setupCurrency() {
+    const detectRegion = async () => {
       try {
-        setIsLoading(true);
-        const currencyData = await initializeCurrency();
-        setUserCurrency(currencyData.currency);
-
-        // Convert all prices
-        const priceMap: { [key: string]: PriceData } = {};
-        for (const plan of plans) {
-          const usdPrice = parseInt(plan.price.replace('$', ''));
-          const converted = await convertPrice(usdPrice, currencyData.currency);
-          priceMap[plan.name] = converted;
-        }
-        setConvertedPrices(priceMap);
+        const region = await getUserRegionCached();
+        setUserRegion(region);
       } catch (error) {
-        console.error('Error setting up currency:', error);
-        // Fallback to USD
-        const priceMap: { [key: string]: PriceData } = {};
-        for (const plan of plans) {
-          priceMap[plan.name] = {
-            amount: plan.price,
-            currency: 'USD',
-            symbol: '$'
-          };
-        }
-        setConvertedPrices(priceMap);
+        console.warn("Failed to detect user region:", error);
+        setUserRegion("global");
       } finally {
         setIsLoading(false);
       }
-    }
+    };
 
-    setupCurrency();
+    detectRegion();
   }, []);
+
+  // Get the correct price for the current region and billing period
+  const getPrice = (plan: (typeof plans)[0]) => {
+    const regionKey =
+      userRegion === "india"
+        ? "India"
+        : userRegion === "asia"
+        ? "Asia"
+        : "Global";
+    const pricing = isYearly ? plan.yearly : plan.monthly;
+    return pricing[regionKey as keyof typeof pricing];
+  };
+
+  // Get region config for currency display
+  const regionConfig = getRegionConfig(userRegion);
 
   return (
     <section className="py-24 bg-gray-100 ">
@@ -145,6 +146,35 @@ export default function Pricing() {
           Simple, transparent pricing that grows with you. Start free and
           upgrade as your business expands.
         </p>
+
+        {/* Monthly/Yearly Toggle */}
+        <div className="flex justify-center mt-8">
+          <div className="bg-white rounded-full p-1 shadow-sm border">
+            <button
+              onClick={() => setIsYearly(false)}
+              className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                !isYearly
+                  ? "bg-cyan-500 text-white shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setIsYearly(true)}
+              className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                isYearly
+                  ? "bg-cyan-500 text-white shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              Yearly
+              <span className="ml-1 text-xs bg-green-100 text-green-600 px-2 py-0.5 rounded-full">
+                Save 20%
+              </span>
+            </button>
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 max-w-6xl mx-auto">
           {plans.map((plan, index) => {
@@ -183,14 +213,14 @@ export default function Pricing() {
                     ) : (
                       <>
                         <span className="text-5xl font-bold text-gray-900">
-                          {convertedPrices[plan.name]?.amount || plan.price}
+                          {getPrice(plan)}
                         </span>
-                        <span className="text-gray-600 ml-2">{plan.period}</span>
-                        {userCurrency !== 'USD' && (
-                          <div className="text-xs text-cyan-600 mt-1">
-                            Prices in {userCurrency}
-                          </div>
-                        )}
+                        <span className="text-gray-600 ml-2">
+                          {plan.period}
+                        </span>
+                        <div className="text-xs text-cyan-600 mt-1">
+                          Prices in {regionConfig.currency}
+                        </div>
                       </>
                     )}
                   </div>

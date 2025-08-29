@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
 import {
   Check,
   X,
@@ -17,21 +17,25 @@ import {
   Shield,
   QrCode,
   Smartphone,
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { WobbleCard } from "@/components/ui/wobble-card"
-import InfiniteMovingCardsDemo from "@/components/infinite-moving-cards-demo"
-import Navbar from "@/components/navbar"
-import { HoverEffect } from "@/components/ui/card-hover-effect"
-import { Footer } from "@/components/footer"
-import Tag from "@/components/ui/tag"
-import { convertPrice, initializeCurrency, type PriceData } from "@/lib/currency-utils"
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { WobbleCard } from "@/components/ui/wobble-card";
+import InfiniteMovingCardsDemo from "@/components/infinite-moving-cards-demo";
+import Navbar from "@/components/navbar";
+import { HoverEffect } from "@/components/ui/card-hover-effect";
+import { Footer } from "@/components/footer";
+import Tag from "@/components/ui/tag";
+import {
+  getUserRegionCached,
+  getRegionConfig,
+  type Region,
+} from "@/lib/region";
 
 const plans = [
   {
     name: "Basic",
-    price: "$35",
-    yearlyPrice: "$29",
+    monthly: { India: "₹1199", Asia: "$14", Global: "$35" },
+    yearly: { India: "₹999", Asia: "$12", Global: "$29" },
     period: "per month",
     yearlyNote: "Save $72 yearly",
     description: "Perfect for small businesses getting started",
@@ -60,8 +64,8 @@ const plans = [
   },
   {
     name: "Premium",
-    price: "$71",
-    yearlyPrice: "$59",
+    monthly: { India: "₹3,599", Asia: "$44", Global: "$71" },
+    yearly: { India: "₹2,999", Asia: "$36", Global: "$59" },
     period: "per month",
     yearlyNote: "Save $144 yearly",
     description: "Ideal for growing businesses and small teams",
@@ -90,8 +94,8 @@ const plans = [
   },
   {
     name: "Enterprise",
-    price: "$95",
-    yearlyPrice: "$79",
+    monthly: { India: "₹5,999", Asia: "$72", Global: "$95" },
+    yearly: { India: "₹4,999", Asia: "$60", Global: "$79" },
     period: "per month",
     yearlyNote: "Save $192 yearly",
     description: "For large organizations with complex needs",
@@ -118,7 +122,7 @@ const plans = [
     ],
     popular: false,
   },
-]
+];
 
 const allFeatures = [
   "Service Conversations - Unlimited",
@@ -146,7 +150,7 @@ const allFeatures = [
   "Scheduled Campaigns",
   "Priority Support",
   "Mobile App",
-]
+];
 
 const addOns = [
   {
@@ -155,24 +159,26 @@ const addOns = [
       "Add one more flow to your flow builder for creating advanced customer journeys and automated sequences.",
     link: "More Detail",
     icon: <Settings size={24} className="text-cyan-600" />,
-    price: "$5/month",
-    usdPrice: 5,
+    monthly: { India: "₹399", Asia: "$5", Global: "$5" },
+    yearly: { India: "₹3,999", Asia: "$50", Global: "$50" },
   },
   {
     title: "Extra Contacts (1,000)",
-    description: "Expand your contact database with 1,000 additional contacts to manage more customers effectively.",
+    description:
+      "Expand your contact database with 1,000 additional contacts to manage more customers effectively.",
     link: "More Detail",
     icon: <Users size={24} className="text-cyan-600" />,
-    price: "$7/month",
-    usdPrice: 7,
+    monthly: { India: "₹599", Asia: "$7", Global: "$7" },
+    yearly: { India: "₹5,999", Asia: "$70", Global: "$70" },
   },
   {
     title: "Mobile App Access",
-    description: "Get full access to our mobile application for managing your WhatsApp business on the go.",
+    description:
+      "Get full access to our mobile application for managing your WhatsApp business on the go.",
     link: "More Detail",
     icon: <Smartphone size={24} className="text-cyan-600" />,
-    price: "$19/month",
-    usdPrice: 19,
+    monthly: { India: "₹1,599", Asia: "$19", Global: "$19" },
+    yearly: { India: "₹15,999", Asia: "$190", Global: "$190" },
   },
   {
     title: "Auto-Sync Feature",
@@ -180,123 +186,104 @@ const addOns = [
       "Automatically sync incoming recipients to edit contacts from chat screen without manual intervention.",
     link: "More Detail",
     icon: <Database size={24} className="text-cyan-600" />,
-    price: "Included in Premium+",
-    usdPrice: 0,
+    monthly: {
+      India: "Included in Premium+",
+      Asia: "Included in Premium+",
+      Global: "Included in Premium+",
+    },
+    yearly: {
+      India: "Included in Premium+",
+      Asia: "Included in Premium+",
+      Global: "Included in Premium+",
+    },
   },
   {
     title: "Priority Support",
-    description: "Get 24/7 priority access to our support team with faster response times and dedicated assistance.",
+    description:
+      "Get 24/7 priority access to our support team with faster response times and dedicated assistance.",
     link: "More Detail",
     icon: <Headphones size={24} className="text-cyan-600" />,
-    price: "Enterprise Only",
-    usdPrice: 0,
+    monthly: {
+      India: "Enterprise Only",
+      Asia: "Enterprise Only",
+      Global: "Enterprise Only",
+    },
+    yearly: {
+      India: "Enterprise Only",
+      Asia: "Enterprise Only",
+      Global: "Enterprise Only",
+    },
   },
   {
     title: "Advanced Analytics",
-    description: "Deep dive into your campaign performance with detailed analytics, reports, and customer insights.",
+    description:
+      "Deep dive into your campaign performance with detailed analytics, reports, and customer insights.",
     link: "More Detail",
     icon: <BarChart3 size={24} className="text-cyan-600" />,
-    price: "Premium+",
-    usdPrice: 0,
+    monthly: { India: "Premium+", Asia: "Premium+", Global: "Premium+" },
+    yearly: { India: "Premium+", Asia: "Premium+", Global: "Premium+" },
   },
-]
+];
 
 export default function PricingPage() {
-  const [isYearly, setIsYearly] = useState(false)
-  const [expandedCards, setExpandedCards] = useState<{ [key: number]: boolean }>({})
-  const [email, setEmail] = useState("")
-  const [convertedPrices, setConvertedPrices] = useState<{ [key: string]: PriceData }>({})
-  const [convertedYearlyPrices, setConvertedYearlyPrices] = useState<{ [key: string]: PriceData }>({})
-  const [convertedAddOnPrices, setConvertedAddOnPrices] = useState<{ [key: string]: PriceData }>({})
-  const [isLoading, setIsLoading] = useState(true)
-  const [userCurrency, setUserCurrency] = useState<string>('USD')
+  const [isYearly, setIsYearly] = useState(false);
+  const [expandedCards, setExpandedCards] = useState<{
+    [key: number]: boolean;
+  }>({});
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [userRegion, setUserRegion] = useState<Region>("global");
 
   const toggleExpanded = (cardIndex: number) => {
     setExpandedCards((prev) => ({
       ...prev,
       [cardIndex]: !prev[cardIndex],
-    }))
-  }
+    }));
+  };
 
-  // Initialize currency conversion
+  // Get user region on component mount
   useEffect(() => {
-    async function setupCurrency() {
+    const detectRegion = async () => {
       try {
-        setIsLoading(true);
-        const currencyData = await initializeCurrency();
-        setUserCurrency(currencyData.currency);
-
-        // Convert all monthly prices
-        const monthlyPriceMap: { [key: string]: PriceData } = {};
-        const yearlyPriceMap: { [key: string]: PriceData } = {};
-        const addOnPriceMap: { [key: string]: PriceData } = {};
-        
-        for (const plan of plans) {
-          const monthlyUsdPrice = parseInt(plan.price.replace('$', ''));
-          const yearlyUsdPrice = parseInt(plan.yearlyPrice.replace('$', ''));
-          
-          const convertedMonthly = await convertPrice(monthlyUsdPrice, currencyData.currency);
-          const convertedYearly = await convertPrice(yearlyUsdPrice, currencyData.currency);
-          
-          monthlyPriceMap[plan.name] = convertedMonthly;
-          yearlyPriceMap[plan.name] = convertedYearly;
-        }
-
-        // Convert add-on prices
-        for (const addOn of addOns) {
-          if (addOn.usdPrice > 0) {
-            const converted = await convertPrice(addOn.usdPrice, currencyData.currency);
-            addOnPriceMap[addOn.title] = converted;
-          } else {
-            addOnPriceMap[addOn.title] = {
-              amount: addOn.price,
-              currency: 'USD',
-              symbol: '$'
-            };
-          }
-        }
-        
-        setConvertedPrices(monthlyPriceMap);
-        setConvertedYearlyPrices(yearlyPriceMap);
-        setConvertedAddOnPrices(addOnPriceMap);
+        const region = await getUserRegionCached();
+        setUserRegion(region);
       } catch (error) {
-        console.error('Error setting up currency:', error);
-        // Fallback to USD
-        const monthlyPriceMap: { [key: string]: PriceData } = {};
-        const yearlyPriceMap: { [key: string]: PriceData } = {};
-        const addOnPriceMap: { [key: string]: PriceData } = {};
-        
-        for (const plan of plans) {
-          monthlyPriceMap[plan.name] = {
-            amount: plan.price,
-            currency: 'USD',
-            symbol: '$'
-          };
-          yearlyPriceMap[plan.name] = {
-            amount: plan.yearlyPrice,
-            currency: 'USD',
-            symbol: '$'
-          };
-        }
-
-        for (const addOn of addOns) {
-          addOnPriceMap[addOn.title] = {
-            amount: addOn.price,
-            currency: 'USD',
-            symbol: '$'
-          };
-        }
-        
-        setConvertedPrices(monthlyPriceMap);
-        setConvertedYearlyPrices(yearlyPriceMap);
-        setConvertedAddOnPrices(addOnPriceMap);
+        console.warn("Failed to detect user region:", error);
+        setUserRegion("global");
       } finally {
         setIsLoading(false);
       }
-    }
+    };
 
-    setupCurrency();
+    detectRegion();
   }, []);
+
+  // Get the correct price for the current region and billing period
+  const getPrice = (plan: (typeof plans)[0]) => {
+    const regionKey =
+      userRegion === "india"
+        ? "India"
+        : userRegion === "asia"
+        ? "Asia"
+        : "Global";
+    const pricing = isYearly ? plan.yearly : plan.monthly;
+    return pricing[regionKey as keyof typeof pricing];
+  };
+
+  // Get add-on price for the current region and billing period
+  const getAddOnPrice = (addOn: (typeof addOns)[0]) => {
+    const regionKey =
+      userRegion === "india"
+        ? "India"
+        : userRegion === "asia"
+        ? "Asia"
+        : "Global";
+    const pricing = isYearly ? addOn.yearly : addOn.monthly;
+    return pricing[regionKey as keyof typeof pricing];
+  };
+
+  // Get region config for currency display
+  const regionConfig = getRegionConfig(userRegion);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-cyan-100 via-purple-100 to-white">
@@ -316,18 +303,25 @@ export default function PricingPage() {
               <span className="text-cyan-600">Goals!</span>
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-12 leading-relaxed">
-              Take control of your WhatsApp business from start to finish. You'll never miss a step along the way.
+              Take control of your WhatsApp business from start to finish.
+              You'll never miss a step along the way.
             </p>
           </div>
 
           {/* Billing Toggle */}
           <div className="flex items-center justify-center gap-4 mb-12">
-            <span className={`text-sm font-medium ${!isYearly ? "text-gray-900" : "text-gray-500"}`}>
+            <span
+              className={`text-sm font-medium ${
+                !isYearly ? "text-gray-900" : "text-gray-500"
+              }`}
+            >
               Monthly billing
             </span>
             <button
               onClick={() => setIsYearly(!isYearly)}
-              className={`relative w-12 h-6 rounded-full transition-colors ${isYearly ? "bg-cyan-500" : "bg-gray-300"}`}
+              className={`relative w-12 h-6 rounded-full transition-colors ${
+                isYearly ? "bg-cyan-500" : "bg-gray-300"
+              }`}
             >
               <div
                 className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
@@ -335,7 +329,11 @@ export default function PricingPage() {
                 }`}
               />
             </button>
-            <span className={`text-sm font-medium ${isYearly ? "text-gray-900" : "text-gray-500"}`}>
+            <span
+              className={`text-sm font-medium ${
+                isYearly ? "text-gray-900" : "text-gray-500"
+              }`}
+            >
               Annual billing
             </span>
             {isYearly && (
@@ -348,20 +346,22 @@ export default function PricingPage() {
       </div>
 
       {/* Pricing Cards */}
-      <div className="px-4 sm:px-6 lg:px-8 pb-16">
+      <div className="px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
             {plans.map((plan, index) => {
-              const initialFeatures = plan.features.slice(0, 8)
-              const additionalFeatures = plan.features.slice(8)
-              const hasMoreFeatures = additionalFeatures.length > 0
-              const isExpanded = expandedCards[index]
+              const initialFeatures = plan.features.slice(0, 8);
+              const additionalFeatures = plan.features.slice(8);
+              const hasMoreFeatures = additionalFeatures.length > 0;
+              const isExpanded = expandedCards[index];
 
               return (
                 <div
                   key={plan.name}
                   className={`bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border-2 transition-all duration-300 hover:shadow-xl flex flex-col h-full ${
-                    plan.popular ? "border-cyan-500 relative" : "border-gray-200 hover:border-cyan-200"
+                    plan.popular
+                      ? "border-cyan-500 relative"
+                      : "border-gray-200 hover:border-cyan-200"
                   }`}
                 >
                   {plan.popular && (
@@ -372,7 +372,9 @@ export default function PricingPage() {
                     </div>
                   )}
                   <div className="text-center mb-8">
-                    <h3 className="text-2xl font-semibold text-gray-900 mb-2">{plan.name}</h3>
+                    <h3 className="text-2xl font-semibold text-gray-900 mb-2">
+                      {plan.name}
+                    </h3>
                     <p className="text-gray-600 mb-4">{plan.description}</p>
                     <div className="mb-4">
                       {isLoading ? (
@@ -382,50 +384,80 @@ export default function PricingPage() {
                       ) : (
                         <>
                           <span className="text-5xl font-bold text-gray-900">
-                            {isYearly 
-                              ? convertedYearlyPrices[plan.name]?.amount || plan.yearlyPrice
-                              : convertedPrices[plan.name]?.amount || plan.price
-                            }
+                            {getPrice(plan)}
                           </span>
-                          <span className="text-gray-600 ml-2">{plan.period}</span>
-                          {userCurrency !== 'USD' && (
-                            <div className="text-xs text-cyan-600 mt-1">
-                              Prices in {userCurrency}
-                            </div>
-                          )}
+                          <span className="text-gray-600 ml-2">
+                            {plan.period}
+                          </span>
+                          <div className="text-xs text-cyan-600 mt-1">
+                            Prices in {regionConfig.currency}
+                          </div>
                         </>
                       )}
                     </div>
-                    {isYearly && <p className="text-sm text-cyan-600 font-medium">{plan.yearlyNote}</p>}
+                    {isYearly && (
+                      <p className="text-sm text-cyan-600 font-medium">
+                        {plan.yearlyNote}
+                      </p>
+                    )}
                   </div>
                   <div className="flex-grow mb-8">
                     <ul className="space-y-4">
                       {initialFeatures.map((feature, featureIndex) => (
                         <li key={featureIndex} className="flex items-start">
                           {feature.included ? (
-                            <Check size={20} className="text-cyan-500 mr-3 mt-0.5 flex-shrink-0" />
+                            <Check
+                              size={20}
+                              className="text-cyan-500 mr-3 mt-0.5 flex-shrink-0"
+                            />
                           ) : (
-                            <X size={20} className="text-gray-300 mr-3 mt-0.5 flex-shrink-0" />
+                            <X
+                              size={20}
+                              className="text-gray-300 mr-3 mt-0.5 flex-shrink-0"
+                            />
                           )}
-                          <span className={`text-sm ${feature.included ? "text-gray-700" : "text-gray-400"}`}>
+                          <span
+                            className={`text-sm ${
+                              feature.included
+                                ? "text-gray-700"
+                                : "text-gray-400"
+                            }`}
+                          >
                             {feature.name}
                           </span>
                         </li>
                       ))}
                       <div
                         className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                          isExpanded ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+                          isExpanded
+                            ? "max-h-96 opacity-100"
+                            : "max-h-0 opacity-0"
                         }`}
                       >
                         <div className="-mt-4 space-y-4 pt-4">
                           {additionalFeatures.map((feature, featureIndex) => (
-                            <li key={`additional-${featureIndex}`} className="flex items-start">
+                            <li
+                              key={`additional-${featureIndex}`}
+                              className="flex items-start"
+                            >
                               {feature.included ? (
-                                <Check size={20} className="text-cyan-500 mr-3 mt-0.5 flex-shrink-0" />
+                                <Check
+                                  size={20}
+                                  className="text-cyan-500 mr-3 mt-0.5 flex-shrink-0"
+                                />
                               ) : (
-                                <X size={20} className="text-gray-300 mr-3 mt-0.5 flex-shrink-0" />
+                                <X
+                                  size={20}
+                                  className="text-gray-300 mr-3 mt-0.5 flex-shrink-0"
+                                />
                               )}
-                              <span className={`text-sm ${feature.included ? "text-gray-700" : "text-gray-400"}`}>
+                              <span
+                                className={`text-sm ${
+                                  feature.included
+                                    ? "text-gray-700"
+                                    : "text-gray-400"
+                                }`}
+                              >
                                 {feature.name}
                               </span>
                             </li>
@@ -439,9 +471,15 @@ export default function PricingPage() {
                         className="flex items-center justify-center w-full text-cyan-600 hover:text-cyan-700 font-medium py-4 transition-colors duration-200"
                       >
                         <span className="mr-1 text-sm">
-                          {isExpanded ? "View Less" : `View More (${additionalFeatures.length})`}
+                          {isExpanded
+                            ? "View Less"
+                            : `View More (${additionalFeatures.length})`}
                         </span>
-                        {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                        {isExpanded ? (
+                          <ChevronUp size={16} />
+                        ) : (
+                          <ChevronDown size={16} />
+                        )}
                       </button>
                     )}
                   </div>
@@ -457,38 +495,44 @@ export default function PricingPage() {
                     </Button>
                   </div>
                 </div>
-              )
+              );
             })}
           </div>
 
           {/* Feature Comparison Table */}
           <div className="mb-16 mt-20">
-          <div className="text-center mb-8 ">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">Enhance Your Plan with <span className="text-cyan-600">Add-Ons</span> </h2> 
+            <div className="text-center mb-8 ">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                Enhance Your Plan with{" "}
+                <span className="text-cyan-600">Add-Ons</span>{" "}
+              </h2>
               <p className="text-gray-600 max-w-2xl mx-auto mb-4">
-                Customize your AvenPing experience with these powerful add-ons designed to scale with your business
-                needs.
+                Customize your AvenPing experience with these powerful add-ons
+                designed to scale with your business needs.
               </p>
               <span className="inline-flex items-center gap-2 px-3 py-1 bg-cyan-100 text-cyan-600 rounded-full text-sm font-medium">
                 6 Add-ons Available
               </span>
             </div>
-            <HoverEffect items={addOns.map(addOn => ({
-              ...addOn,
-              price: convertedAddOnPrices[addOn.title]?.amount || addOn.price
-            }))} />
+            <HoverEffect
+              items={addOns.map((addOn) => ({
+                ...addOn,
+                price: getAddOnPrice(addOn),
+              }))}
+            />
           </div>
-         
 
           {/* Enhanced Experience Section with Wobble Cards - Consistent Colors */}
           <div className="mb-16">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                Experience the Power of <span className="text-cyan-600">AvenPing</span>
+                Experience the Power of{" "}
+                <span className="text-cyan-600">AvenPing</span>
               </h2>
               <p className="text-gray-600 max-w-2xl mx-auto">
-                Discover how AvenPing transforms your WhatsApp business communications with cutting-edge features and
-                seamless integrations.
+                Discover how AvenPing transforms your WhatsApp business
+                communications with cutting-edge features and seamless
+                integrations.
               </p>
             </div>
 
@@ -499,17 +543,18 @@ export default function PricingPage() {
                     AvenPing powers your entire WhatsApp business
                   </h2>
                   <p className="mt-4 text-left text-base/6 text-neutral-200">
-                    With over 10,000+ active business users, AvenPing is the most trusted WhatsApp business platform for
-                    modern companies.
+                    With over 10,000+ active business users, AvenPing is the
+                    most trusted WhatsApp business platform for modern
+                    companies.
                   </p>
                 </div>
                 <img
-          src="/whatsapp-dashboard.png"
-          width={500}
-          height={500}
-          alt="linear demo image"
-          className="absolute -right-10 md:-right-[40%] lg:-right-[20%] -bottom-10 object-contain rounded-2xl"
-        />
+                  src="/whatsapp-dashboard.png"
+                  width={500}
+                  height={500}
+                  alt="linear demo image"
+                  className="absolute -right-10 md:-right-[40%] lg:-right-[20%] -bottom-10 object-contain rounded-2xl"
+                />
               </WobbleCard>
 
               <WobbleCard containerClassName="col-span-1 min-h-[300px] bg-gradient-to-br from-cyan-400 to-cyan-500">
@@ -517,7 +562,8 @@ export default function PricingPage() {
                   Smart automation, seamless experience.
                 </h2>
                 <p className="mt-4 max-w-[26rem] text-left text-base/6 text-neutral-200">
-                  Automate responses, manage contacts, and track analytics all in one powerful platform.
+                  Automate responses, manage contacts, and track analytics all
+                  in one powerful platform.
                 </p>
                 <div className="absolute -right-4 -bottom-4">
                   <Bot size={80} className="text-white/30" />
@@ -527,22 +573,22 @@ export default function PricingPage() {
               <WobbleCard containerClassName="col-span-1 lg:col-span-3 bg-gradient-to-br from-cyan-600 to-blue-600 min-h-[500px] lg:min-h-[600px] xl:min-h-[300px]">
                 <div className="max-w-sm">
                   <h2 className="max-w-sm md:max-w-lg text-left text-balance text-base md:text-xl lg:text-3xl font-semibold tracking-[-0.015em] text-white">
-                    Join thousands of businesses already using AvenPing for WhatsApp success!
+                    Join thousands of businesses already using AvenPing for
+                    WhatsApp success!
                   </h2>
                   <p className="mt-4 max-w-[26rem] text-left text-base/6 text-neutral-200">
-                    From small startups to enterprise companies, AvenPing scales with your business needs and delivers
-                    results.
+                    From small startups to enterprise companies, AvenPing scales
+                    with your business needs and delivers results.
                   </p>
                 </div>
-                
+
                 <img
-          src="/whatsapp-dashboard.png"
-          width={500}
-          height={500}
-          alt="linear demo image"
-          className="absolute -right-10 md:-right-[40%] lg:-right-[20%] -bottom-10 object-contain rounded-2xl"
-        />
-                
+                  src="/whatsapp-dashboard.png"
+                  width={500}
+                  height={500}
+                  alt="linear demo image"
+                  className="absolute -right-10 md:-right-[40%] lg:-right-[20%] -bottom-10 object-contain rounded-2xl"
+                />
               </WobbleCard>
             </div>
           </div>
@@ -554,7 +600,8 @@ export default function PricingPage() {
                 What Our <span className="text-cyan-600">Customers Say</span>
               </h2>
               <p className="text-gray-600 max-w-2xl mx-auto">
-                Don't just take our word for it. Here's what real businesses are saying about AvenPing.
+                Don't just take our word for it. Here's what real businesses are
+                saying about AvenPing.
               </p>
             </div>
             <InfiniteMovingCardsDemo />
@@ -562,10 +609,12 @@ export default function PricingPage() {
 
           {/* Final CTA Section */}
           <div className="text-center py-16 relative">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Ready to Transform Your WhatsApp Business?</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Ready to Transform Your WhatsApp Business?
+            </h2>
             <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-              Join thousands of businesses already using AvenPing to streamline their WhatsApp communications and boost
-              customer engagement.
+              Join thousands of businesses already using AvenPing to streamline
+              their WhatsApp communications and boost customer engagement.
             </p>
 
             {/* Email Signup */}
@@ -581,13 +630,10 @@ export default function PricingPage() {
                 Start Free Trial
               </Button>
             </div>
-
-            
           </div>
-
         </div>
-         <Footer/>
       </div>
+      <Footer />
     </div>
-  )
+  );
 }

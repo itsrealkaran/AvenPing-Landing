@@ -436,6 +436,12 @@ export default function PricingPage() {
                         }`}
                       >
                         <Button
+                          onClick={() => {
+                            window.open(
+                              "https://app.avenping.com/signup",
+                              "_blank"
+                            );
+                          }}
                           className={`w-full max-w-xs h-12 text-lg rounded-full ${
                             plan.popular
                               ? "bg-cyan-500 hover:bg-cyan-600 text-white"
@@ -502,7 +508,7 @@ export default function PricingPage() {
                   </p>
                 </div>
                 <img
-                  src="/whatsapp-dashboard.png"
+                  src="/message_page.png"
                   width={500}
                   height={500}
                   alt="linear demo image"
@@ -526,8 +532,7 @@ export default function PricingPage() {
               <WobbleCard containerClassName="col-span-1 lg:col-span-3 bg-gradient-to-br from-cyan-600 to-blue-600 min-h-[500px] lg:min-h-[600px] xl:min-h-[300px]">
                 <div className="max-w-sm">
                   <h2 className="max-w-sm md:max-w-lg text-left text-balance text-base md:text-xl lg:text-3xl font-semibold tracking-[-0.015em] text-white">
-                    Join thousands of businesses already using AvenPing for
-                    WhatsApp success!
+                    Join businesses already using AvenPing for WhatsApp success!
                   </h2>
                   <p className="mt-4 max-w-[26rem] text-left text-base/6 text-neutral-200">
                     From small startups to enterprise companies, AvenPing scales
@@ -536,11 +541,11 @@ export default function PricingPage() {
                 </div>
 
                 <img
-                  src="/whatsapp-dashboard.png"
+                  src="/avenping_dashboard.png"
                   width={500}
                   height={500}
                   alt="linear demo image"
-                  className="absolute -right-10 md:-right-[40%] lg:-right-[20%] -bottom-10 object-contain rounded-2xl"
+                  className="absolute -right-10 md:-right-[40%] lg:-right-[20%] -bottom-10 object-contain"
                 />
               </WobbleCard>
             </div>
@@ -558,31 +563,6 @@ export default function PricingPage() {
               </p>
             </div>
             <InfiniteMovingCardsDemo />
-          </div>
-
-          {/* Final CTA Section */}
-          <div className="text-center py-16 relative">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Ready to Transform Your WhatsApp Business?
-            </h2>
-            <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-              Join thousands of businesses already using AvenPing to streamline
-              their WhatsApp communications and boost customer engagement.
-            </p>
-
-            {/* Email Signup */}
-            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto mb-12">
-              <input
-                type="email"
-                placeholder="Enter your business email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 px-4 py-3 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent backdrop-blur-sm bg-white/80"
-              />
-              <Button className="bg-cyan-500 hover:bg-cyan-600 text-white px-6 py-3 rounded-full whitespace-nowrap">
-                Start Free Trial
-              </Button>
-            </div>
           </div>
         </div>
       </div>

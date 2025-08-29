@@ -249,8 +249,7 @@ export default function Hero() {
           style={{ zIndex: 10, position: "relative" }}
         >
           <div className="inline-flex py-1 px-3 bg-gradient-to-r from-cyan-400 to-cyan-500 rounded-full text-white font-semibold">
-            Trusted by 10,000+ businesses
-            
+            Trusted by 100+ businesses
           </div>
         </div>
         <h1

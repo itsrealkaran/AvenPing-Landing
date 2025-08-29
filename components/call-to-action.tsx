@@ -6,7 +6,6 @@ import { twMerge } from "tailwind-merge";
 import Link from "next/link";
 import Button from "./ui/button2";
 
-
 export default function CallToAction() {
   const animation = useRef<AnimationPlaybackControls | null>(null);
   const [scope, animate] = useAnimate();
@@ -32,7 +31,7 @@ export default function CallToAction() {
   }, [slowDownAnimation]);
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-12 bg-white">
       <div className="overflow-x-clip p-4 flex">
         <motion.div
           ref={scope}
@@ -42,9 +41,11 @@ export default function CallToAction() {
         >
           {Array.from({ length: 10 }).map((_, index) => (
             <div key={index} className="flex items-center gap-16">
-              <span className="text-cyan-600 text-4xl">&#10038;</span>
-              <span className={twMerge(slowDownAnimation && "text-cyan-600 text-4xl")}
-              style={{ fontSize: "inherit" }}>
+              <span className="text-cyan-600 text-6xl">&#10038;</span>
+              <span
+                className={twMerge(slowDownAnimation && "text-cyan-600")}
+                style={{ fontSize: "inherit" }}
+              >
                 Start for free
               </span>
             </div>
@@ -54,7 +55,7 @@ export default function CallToAction() {
       <div className="text-center mt-8">
         <Link href="https://app.avenping.com/signup">
           <Button variant="primary" className="text-lg px-8 h-14">
-            Get Started Now
+            Try Free Trial
           </Button>
         </Link>
       </div>

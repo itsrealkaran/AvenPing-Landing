@@ -86,19 +86,11 @@ const plans = [
 ];
 
 export default function Pricing() {
-  const [expandedCards, setExpandedCards] = useState<{
-    [key: number]: boolean;
-  }>({});
+  // Use a single state to control expansion for all cards
+  const [allExpanded, setAllExpanded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [userRegion, setUserRegion] = useState<Region>("global");
   const [isYearly, setIsYearly] = useState(false);
-
-  const toggleExpanded = (index: number) => {
-    setExpandedCards((prev) => ({
-      ...prev,
-      [index]: !prev[index],
-    }));
-  };
 
   // Get user region on component mount
   useEffect(() => {
@@ -131,6 +123,11 @@ export default function Pricing() {
 
   // Get region config for currency display
   const regionConfig = getRegionConfig(userRegion);
+
+  // Handler to toggle all cards' expanded state
+  const handleToggleAll = () => {
+    setAllExpanded((prev) => !prev);
+  };
 
   return (
     <section className="py-24 bg-gray-100 ">
@@ -181,7 +178,7 @@ export default function Pricing() {
             const initialFeatures = plan.features.slice(0, 5);
             const additionalFeatures = plan.features.slice(5);
             const hasMoreFeatures = additionalFeatures.length > 0;
-            const isExpanded = expandedCards[index];
+            const isExpanded = allExpanded;
 
             return (
               <div
@@ -264,7 +261,7 @@ export default function Pricing() {
 
                   {hasMoreFeatures && (
                     <button
-                      onClick={() => toggleExpanded(index)}
+                      onClick={handleToggleAll}
                       className="flex items-center justify-center w-full -mt-0 text-cyan-600 hover:text-cyan-700 font-medium py-4 transition-colors duration-200"
                     >
                       <span className="mr-1 text-sm">
@@ -283,6 +280,9 @@ export default function Pricing() {
 
                 <div className="space-y-3 mt-auto">
                   <Button
+                    onClick={() => {
+                      window.location.href = "https://app.avenping.com/signup";
+                    }}
                     variant={plan.popular ? "primary" : "secondary"}
                     className="w-full h-12 text-lg"
                   >

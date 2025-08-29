@@ -303,7 +303,36 @@ export default function Pricing() {
           <p className="text-gray-600 mb-4">
             Need a custom solution? We're here to help.
           </p>
-          <Button variant="secondary" className="px-8">
+          <Button
+            variant="secondary"
+            className="px-8 h-12 text-lg flex items-center gap-2 justify-center mx-auto"
+            onClick={() => {
+              const subject = encodeURIComponent(
+                "Custom Solution Inquiry - AvenPing Pricing"
+              );
+              const body = encodeURIComponent(`
+Dear AvenPing Sales Team,
+
+I am interested in learning more about custom solutions for my business. I would like to discuss:
+
+- My business requirements and scale
+- Custom pricing options
+- Enterprise features and capabilities
+- Implementation timeline
+- Support and onboarding process
+
+Please contact me to schedule a consultation.
+
+Best regards,
+[Your Name]
+[Your Company]
+[Your Email]
+[Your Phone Number]
+[Your Business Size/Industry]
+              `);
+              window.location.href = `mailto:sales@avenping.com?subject=${subject}&body=${body}`;
+            }}
+          >
             Contact Sales
           </Button>
         </div>

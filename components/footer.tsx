@@ -1,6 +1,6 @@
 "use client";
 
-import { Facebook, Instagram, Linkedin, Youtube } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Youtube, Twitter } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -8,10 +8,10 @@ const footerLinks = {
   Platform: [
     { name: "Features", href: "/features" },
     { name: "Pricing", href: "/pricing" },
-    { name: "Insights", href: "/insights" },
+    { name: "Insights", href: "https://insights.avenping.com/" },
   ],
   Company: [
-    { name: "About", href: "#" },
+    // { name: "About", href: "#" },
     { name: "Careers", href: "/careers" },
     { name: "Contact", href: "/contact" },
   ],
@@ -22,11 +22,11 @@ const footerLinks = {
 };
 
 const socialLinks = [
-  { icon: Facebook, href: "https://facebook.com/avencrm" },
-  { icon: Instagram, href: "https://instagram.com/avencrm_" },
-  // { icon: Twitter, href: "#" },
-  { icon: Linkedin, href: "https://www.linkedin.com/company/aven-crm/" },
-  { icon: Youtube, href: "https://youtube.com/@avencrm" },
+  { icon: Facebook, href: "https://facebook.com/aventechinc" },
+  { icon: Instagram, href: "https://instagram.com/aventechinc" },
+  { icon: Twitter, href: "https://x.com/aventechinc" },
+  { icon: Linkedin, href: "https://www.linkedin.com/company/aventechinc/" },
+  { icon: Youtube, href: "https://youtube.com/@aventechinc" },
 ];
 
 export function Footer() {

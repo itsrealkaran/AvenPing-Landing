@@ -273,16 +273,16 @@ export default function Hero() {
           <input
             type="email"
             placeholder="Enter your email"
-            className="bg-transparent px-4 flex-1 w-full text-gray-900 rounded-full placeholder-gray-500"
+            className="bg-transparent px-4 flex-1 w-full text-gray-900 rounded-full placeholder-gray-500 border-none focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200"
           />
-          <Link href="/signup">
+          <Link href="mailto:info@avenping.com">
             <Button
               size="sm"
               className="whitespace-nowrap"
               type="button"
               variant="primary"
             >
-              Get Started
+              Get In Touch
             </Button>
           </Link>
         </form>

@@ -227,19 +227,9 @@ const addOns = [
 
 export default function PricingPage() {
   const [isYearly, setIsYearly] = useState(false);
-  const [expandedCards, setExpandedCards] = useState<{
-    [key: number]: boolean;
-  }>({});
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [userRegion, setUserRegion] = useState<Region>("global");
-
-  const toggleExpanded = (cardIndex: number) => {
-    setExpandedCards((prev) => ({
-      ...prev,
-      [cardIndex]: !prev[cardIndex],
-    }));
-  };
 
   // Get user region on component mount
   useEffect(() => {
@@ -290,7 +280,7 @@ export default function PricingPage() {
       <Navbar />
 
       {/* Hero Section */}
-      <div className="py-16 px-4 sm:px-6 lg:px-8">
+      <div className="px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <div className="text-center mb-16">
             <div className="flex justify-center mb-8">
@@ -336,167 +326,130 @@ export default function PricingPage() {
             >
               Annual billing
             </span>
-            {isYearly && (
-              <span className="bg-cyan-100 text-cyan-600 px-2 py-1 rounded-md text-xs font-medium">
-                Save up to $192/year
-              </span>
-            )}
           </div>
         </div>
       </div>
 
-      {/* Pricing Cards */}
+      {/* Pricing Table */}
       <div className="px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            {plans.map((plan, index) => {
-              const initialFeatures = plan.features.slice(0, 8);
-              const additionalFeatures = plan.features.slice(8);
-              const hasMoreFeatures = additionalFeatures.length > 0;
-              const isExpanded = expandedCards[index];
-
-              return (
-                <div
-                  key={plan.name}
-                  className={`bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border-2 transition-all duration-300 hover:shadow-xl flex flex-col h-full ${
-                    plan.popular
-                      ? "border-cyan-500 relative"
-                      : "border-gray-200 hover:border-cyan-200"
-                  }`}
-                >
-                  {plan.popular && (
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                      <span className="bg-cyan-500 text-white px-4 py-2 rounded-full text-sm font-medium">
-                        Most Popular
-                      </span>
-                    </div>
-                  )}
-                  <div className="text-center mb-8">
-                    <h3 className="text-2xl font-semibold text-gray-900 mb-2">
-                      {plan.name}
-                    </h3>
-                    <p className="text-gray-600 mb-4">{plan.description}</p>
-                    <div className="mb-4">
-                      {isLoading ? (
-                        <div className="flex items-center justify-center">
-                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"></div>
-                        </div>
-                      ) : (
-                        <>
-                          <span className="text-5xl font-bold text-gray-900">
-                            {getPrice(plan)}
-                          </span>
-                          <span className="text-gray-600 ml-2">
-                            {plan.period}
-                          </span>
-                          <div className="text-xs text-cyan-600 mt-1">
-                            Prices in {regionConfig.currency}
-                          </div>
-                        </>
-                      )}
-                    </div>
-                    {isYearly && (
-                      <p className="text-sm text-cyan-600 font-medium">
-                        {plan.yearlyNote}
-                      </p>
-                    )}
-                  </div>
-                  <div className="flex-grow mb-8">
-                    <ul className="space-y-4">
-                      {initialFeatures.map((feature, featureIndex) => (
-                        <li key={featureIndex} className="flex items-start">
-                          {feature.included ? (
-                            <Check
-                              size={20}
-                              className="text-cyan-500 mr-3 mt-0.5 flex-shrink-0"
-                            />
-                          ) : (
-                            <X
-                              size={20}
-                              className="text-gray-300 mr-3 mt-0.5 flex-shrink-0"
-                            />
-                          )}
-                          <span
-                            className={`text-sm ${
-                              feature.included
-                                ? "text-gray-700"
-                                : "text-gray-400"
-                            }`}
-                          >
-                            {feature.name}
-                          </span>
-                        </li>
-                      ))}
-                      <div
-                        className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                          isExpanded
-                            ? "max-h-96 opacity-100"
-                            : "max-h-0 opacity-0"
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg border border-gray-200 overflow-hidden mb-16">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left py-6 px-6 font-semibold text-gray-900">
+                      Features
+                    </th>
+                    {plans.map((plan) => (
+                      <th
+                        key={plan.name}
+                        className={`text-center py-6 px-6 relative ${
+                          plan.popular ? "bg-cyan-50" : ""
                         }`}
                       >
-                        <div className="-mt-4 space-y-4 pt-4">
-                          {additionalFeatures.map((feature, featureIndex) => (
-                            <li
-                              key={`additional-${featureIndex}`}
-                              className="flex items-start"
-                            >
-                              {feature.included ? (
+                        {plan.popular && (
+                          <div className="absolute top-0 left-1/2 transform -translate-x-1/2">
+                            <span className="bg-cyan-500 text-white px-3 py-1 rounded-full text-xs font-medium">
+                              Most Popular
+                            </span>
+                          </div>
+                        )}
+                        <div className="mt-2">
+                          <h3 className="text-xl font-semibold text-gray-900 mb-1">
+                            {plan.name}
+                          </h3>
+                          <p className="text-sm text-gray-600 mb-3">
+                            {plan.description}
+                          </p>
+                          {isLoading ? (
+                            <div className="flex items-center justify-center">
+                              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-cyan-500"></div>
+                            </div>
+                          ) : (
+                            <>
+                              <div className="text-3xl font-bold text-gray-900 mb-1">
+                                {getPrice(plan)}
+                              </div>
+                              <div className="text-sm text-gray-600">
+                                {plan.period}
+                              </div>
+                              <div className="text-xs text-cyan-600 mt-1">
+                                Prices in {regionConfig.currency}
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {allFeatures.map((feature, featureIndex) => (
+                    <tr
+                      key={featureIndex}
+                      className="border-b border-gray-100 hover:bg-gray-50/50"
+                    >
+                      <td className="py-4 px-6 text-sm font-medium text-gray-900">
+                        {feature}
+                      </td>
+                      {plans.map((plan) => {
+                        const planFeature = plan.features.find(
+                          (f) => f.name === feature
+                        );
+                        return (
+                          <td
+                            key={`${plan.name}-${featureIndex}`}
+                            className={`text-center py-4 px-6 ${
+                              plan.popular ? "bg-cyan-50/30" : ""
+                            }`}
+                          >
+                            {planFeature ? (
+                              planFeature.included ? (
                                 <Check
                                   size={20}
-                                  className="text-cyan-500 mr-3 mt-0.5 flex-shrink-0"
+                                  className="text-cyan-500 mx-auto"
                                 />
                               ) : (
                                 <X
                                   size={20}
-                                  className="text-gray-300 mr-3 mt-0.5 flex-shrink-0"
+                                  className="text-gray-300 mx-auto"
                                 />
-                              )}
-                              <span
-                                className={`text-sm ${
-                                  feature.included
-                                    ? "text-gray-700"
-                                    : "text-gray-400"
-                                }`}
-                              >
-                                {feature.name}
-                              </span>
-                            </li>
-                          ))}
-                        </div>
-                      </div>
-                    </ul>
-                    {hasMoreFeatures && (
-                      <button
-                        onClick={() => toggleExpanded(index)}
-                        className="flex items-center justify-center w-full text-cyan-600 hover:text-cyan-700 font-medium py-4 transition-colors duration-200"
+                              )
+                            ) : (
+                              <span className="text-gray-300">-</span>
+                            )}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr className="bg-gray-50/50">
+                    <td className="py-6 px-6"></td>
+                    {plans.map((plan) => (
+                      <td
+                        key={`button-${plan.name}`}
+                        className={`text-center py-6 px-6 ${
+                          plan.popular ? "bg-cyan-50/50" : ""
+                        }`}
                       >
-                        <span className="mr-1 text-sm">
-                          {isExpanded
-                            ? "View Less"
-                            : `View More (${additionalFeatures.length})`}
-                        </span>
-                        {isExpanded ? (
-                          <ChevronUp size={16} />
-                        ) : (
-                          <ChevronDown size={16} />
-                        )}
-                      </button>
-                    )}
-                  </div>
-                  <div className="space-y-3 mt-auto">
-                    <Button
-                      className={`w-full h-12 text-lg rounded-full ${
-                        plan.popular
-                          ? "bg-cyan-500 hover:bg-cyan-600 text-white"
-                          : "bg-gray-100 hover:bg-gray-200 text-gray-900"
-                      }`}
-                    >
-                      Get Started
-                    </Button>
-                  </div>
-                </div>
-              );
-            })}
+                        <Button
+                          className={`w-full max-w-xs h-12 text-lg rounded-full ${
+                            plan.popular
+                              ? "bg-cyan-500 hover:bg-cyan-600 text-white"
+                              : "bg-gray-100 hover:bg-gray-200 text-gray-900"
+                          }`}
+                        >
+                          Get Started
+                        </Button>
+                      </td>
+                    ))}
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
           </div>
 
           {/* Feature Comparison Table */}

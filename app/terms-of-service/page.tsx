@@ -63,7 +63,7 @@ export default function TermsOfService() {
                 {sections.map((section) => (
                   <a
                     key={section.id}
-                    href={`${section.id}`}
+                    href={`#${section.id}`}
                     className={`block text-xs py-1 transition-colors ${
                       activeSection === section.id
                         ? "text-[#43A2C9] font-medium"

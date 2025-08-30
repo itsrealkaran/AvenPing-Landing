@@ -90,7 +90,7 @@ export default function Pricing() {
   const [allExpanded, setAllExpanded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [userRegion, setUserRegion] = useState<Region>("global");
-  const [isYearly, setIsYearly] = useState(false);
+  const [isYearly, setIsYearly] = useState(true);
 
   // Get user region on component mount
   useEffect(() => {

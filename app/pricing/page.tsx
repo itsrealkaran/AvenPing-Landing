@@ -226,7 +226,7 @@ const addOns = [
 ];
 
 export default function PricingPage() {
-  const [isYearly, setIsYearly] = useState(false);
+  const [isYearly, setIsYearly] = useState(true);
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [userRegion, setUserRegion] = useState<Region>("global");

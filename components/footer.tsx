@@ -25,7 +25,7 @@ const socialLinks = [
   { icon: Facebook, href: "https://facebook.com/aventechinc" },
   { icon: Instagram, href: "https://instagram.com/aventechinc" },
   { icon: Twitter, href: "https://x.com/aventechinc" },
-  { icon: Linkedin, href: "https://www.linkedin.com/company/aventechinc/" },
+  { icon: Linkedin, href: "https://www.linkedin.com/company/aventechnologies/" },
   { icon: Youtube, href: "https://youtube.com/@aventechinc" },
 ];
 
@@ -113,6 +113,8 @@ export function Footer() {
                   key={index}
                   href={link.href}
                   className="text-[#5c5f66] hover:text-[#000000] transition-colors"
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
                   <Icon className="h-5 w-5" />
                 </Link>

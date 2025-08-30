@@ -1,41 +1,41 @@
 import Tag from "./ui/tag";
-import figmaIcon from  "@/public/images/figma-logo.svg";
-import notionIcon from  "@/public/images/notion-logo.svg";
-import slackIcon from  "@/public/images/slack-logo.svg";
-import relumeIcon from  "@/public/images/relume-logo.svg";
-import framerIcon from  "@/public/images/framer-logo.svg";
-import githubIcon from  "@/public/images/github-logo.svg";
+import shopifyIcon from "@/public/images/shopify.svg";
+import woocommerceIcon from "@/public/images/woocommerce.svg";
+import whatsappIcon from "@/public/images/whatsapp.jpg";
+import zapierIcon from "@/public/images/zapier.svg";
+import googleSheetsIcon from "@/public/images/google_sheets.svg";
+import avencrmIcon from "@/public/images/avencrm.svg";
 import IntegrationColumn from "./ui/integration-column";
 
 const integrations = [
     {
         name: "Shopify",
-        icon: figmaIcon,
+        icon: shopifyIcon,
         description: "Connect your Shopify store with WhatsApp for seamless order management.",
     },
     {
         name: "WooCommerce",
-        icon: notionIcon,
+        icon: woocommerceIcon,
         description: "Integrate WooCommerce to handle customer inquiries and orders via WhatsApp.",
     },
     {
-        name: "Slack",
-        icon: slackIcon,
+        name: "WhatsApp",
+        icon: whatsappIcon,
         description: "Get WhatsApp notifications and manage conversations in Slack.",
     },
     {
         name: "Zapier",
-        icon: relumeIcon,
+        icon: zapierIcon,
         description: "Automate workflows by connecting AvenPing with 5000+ apps.",
     },
     {
         name: "Google Sheets",
-        icon: framerIcon,
+        icon: googleSheetsIcon,
         description: "Export contacts and conversation data to Google Sheets automatically.",
     },
     {
         name: "CRM Systems",
-        icon: githubIcon,
+        icon: avencrmIcon,
         description: "Sync customer data with popular CRM platforms like HubSpot and Salesforce.",
     },
 ];

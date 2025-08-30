@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://avenping.com
+
+# Sitemaps
+Sitemap: https://avenping.com/sitemap.xml
